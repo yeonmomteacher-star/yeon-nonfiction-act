@@ -391,6 +391,19 @@ footer{background:#0a162a;color:#d3dceb;padding:35px 0} .footer-inner{display:fl
 }
 </style>
 
+
+<style>
+/* 모바일 Q&A 앵커 보정 */
+#faq{
+  scroll-margin-top:96px!important;
+}
+@media(max-width:760px){
+  #faq{
+    scroll-margin-top:88px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="announcement"><div class="container inner"><span>예온쌤 비문학 독해 · 읽고, 찾고, 연결하고, 정리하는 수업</span><a data-open-apply="true" href="#apply">수업 신청 →</a></div></div>
@@ -703,6 +716,51 @@ body.apply-modal-open{overflow:hidden}
   document.addEventListener('keydown',e=>{if(e.key==='Escape' && modal.classList.contains('is-open')) closeModal();});
 })();
 </script>
+
+<script>
+(function(){
+  function getFaqTarget(){
+    return document.getElementById('faq');
+  }
+
+  function scrollToFaq(behavior){
+    const target = getFaqTarget();
+    if(!target) return;
+
+    const header = document.querySelector('header');
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    const extraGap = window.innerWidth <= 760 ? 14 : 18;
+
+    const top = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - extraGap;
+    window.scrollTo({ top: Math.max(0, top), behavior: behavior || 'auto' });
+  }
+
+  function settleFaqPosition(){
+    // 모바일에서 위쪽 이미지/콘텐츠가 늦게 배치돼도 FAQ 위치를 다시 맞춥니다.
+    scrollToFaq('smooth');
+    [120, 350, 700, 1200, 1800].forEach(function(delay){
+      setTimeout(function(){ scrollToFaq('auto'); }, delay);
+    });
+  }
+
+  document.querySelectorAll('a[href="#faq"]').forEach(function(link){
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      if(history && history.replaceState){
+        history.replaceState(null, '', '#faq');
+      }
+      settleFaqPosition();
+    });
+  });
+
+  window.addEventListener('load', function(){
+    if(location.hash === '#faq'){
+      setTimeout(settleFaqPosition, 80);
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
 <style>
